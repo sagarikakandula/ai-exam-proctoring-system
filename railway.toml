@@ -5,4 +5,5 @@ builder = "Nixpacks"
 startCommand = "python app.py"
 
 [build.nixpacks]
-aptPkgs = ["portaudio19-dev", "python3-dev", "build-essential"]
+nixPkgs = ["portaudio", "python310", "gcc"]
+aptPkgs = ["python3-dev", "build-essential"]
