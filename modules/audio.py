@@ -1,4 +1,10 @@
-import pyaudio
+try:
+    import pyaudio
+    PYAUDIO_AVAILABLE = True
+except ImportError:
+    PYAUDIO_AVAILABLE = False
+    print("[Audio] PyAudio not available - audio monitoring disabled")
+
 import numpy as np
 import threading
 import time
@@ -6,6 +12,9 @@ import time
 
 class AudioMonitor(threading.Thread):
     def __init__(self, callback):
+        if not PYAUDIO_AVAILABLE:
+            raise ImportError("PyAudio not available")
+        
         super(AudioMonitor, self).__init__()
         self.daemon = True
         self.callback = callback
