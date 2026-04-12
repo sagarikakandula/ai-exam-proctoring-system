@@ -50,6 +50,12 @@
         <h2>Admin Sign in</h2>
         <p style="margin-bottom: 1.5rem; font-size: 0.95rem;">Please enter your administrative credentials</p>
         
+        {% if success %}
+        <div class="info-box" style="background: #e6fffa; color: #0b766e; border: 1px solid #5eead4;">
+            {{ success }}
+        </div>
+        {% endif %}
+
         {% if error %}
         <div class="error-msg">{{ error }}</div>
         {% endif %}
@@ -62,6 +68,9 @@
                 <button type="submit" class="ms-btn ms-btn-primary">Sign in</button>
             </div>
         </form>
+        <div class="footer-links" style="margin-top: 1rem; font-size: 0.95rem;">
+            New Admin? <a href="/admin/signup">Register here</a>
+        </div>
     </div>
 </body>
 </html>

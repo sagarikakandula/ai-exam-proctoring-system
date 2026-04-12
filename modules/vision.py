@@ -174,10 +174,10 @@ class VisionMonitor:
                         x_ang = np.degrees(np.arctan2(-mat[1, 2], mat[1, 1]))
                         y_ang = np.degrees(np.arctan2(-mat[2, 0], 0))
 
-                    if   y_ang < -15: direction = "Looking Left"
-                    elif y_ang >  15: direction = "Looking Right"
-                    elif x_ang < -15: direction = "Looking Down"
-                    elif x_ang >  15: direction = "Looking Up"
+                    if   y_ang < -20: direction = "Looking Left"
+                    elif y_ang >  20: direction = "Looking Right"
+                    elif x_ang < -20: direction = "Looking Down"
+                    elif x_ang >  20: direction = "Looking Up"
 
                 if direction != "Forward":
                     if not self.is_looking_away:
@@ -257,16 +257,20 @@ class VisionMonitor:
         # ── 2. Object detection (phone / book / device) ───────────────────────
         obj_results = self.obj_det.detect(mp_img)
 
-        PHONE_LABELS = {"cell phone", "mobile phone", "phone", "remote", "laptop"}
+        PHONE_LABELS = {"cell phone", "mobile phone", "phone", "remote"}
+        LAPTOP_LABELS = {"laptop"}
         BOOK_LABELS  = {"book"}
 
+        frame_area = float(frame.shape[0] * frame.shape[1]) if frame is not None else 1.0
         for det in obj_results.detections:
             for cat in det.categories:
                 label = cat.category_name.lower()
                 score = cat.score
-                bb    = det.bounding_box
+                bb = det.bounding_box
+                box_area = float(bb.width * bb.height)
+                area_ratio = box_area / frame_area if frame_area else 0.0
 
-                if label in PHONE_LABELS and score >= 0.35:
+                if label in PHONE_LABELS and score >= 0.38 and area_ratio >= 0.05:
                     msg = f"Phone/device detected ({cat.category_name}: {score:.0%})"
                     infractions.append(msg)
                     self.current_status = "⚠ Phone Detected!"
@@ -279,8 +283,21 @@ class VisionMonitor:
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
                     evidence = self._save_evidence(frame, "phone_detected")
 
-                elif label in BOOK_LABELS and score >= 0.35:
-                    msg = f"Book detected in frame ({score:.0%}) — possible cheating material"
+                elif label in LAPTOP_LABELS and score >= 0.35 and area_ratio >= 0.08:
+                    msg = f"Laptop detected ({cat.category_name}: {score:.0%})"
+                    infractions.append(msg)
+                    self.current_status = "⚠ Device Detected!"
+                    cv2.rectangle(frame,
+                                  (bb.origin_x, bb.origin_y),
+                                  (bb.origin_x + bb.width, bb.origin_y + bb.height),
+                                  (0, 0, 255), 3)
+                    cv2.putText(frame, f"LAPTOP {score:.0%}",
+                                (bb.origin_x, max(bb.origin_y - 10, 20)),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 0, 255), 2)
+                    evidence = self._save_evidence(frame, "laptop_detected")
+
+                elif label in BOOK_LABELS and score >= 0.35 and area_ratio >= 0.06 and bb.origin_y > frame.shape[0] * 0.35:
+                    msg = f"Book detected in frame ({score:.0%}) — possible exam material"
                     infractions.append(msg)
                     self.current_status = "⚠ Book Detected!"
                     cv2.rectangle(frame,

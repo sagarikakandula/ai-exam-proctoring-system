@@ -173,7 +173,8 @@
                     <button type="submit" class="ms-btn ms-btn-primary" style="width: 100%; margin-top: 1rem;" id="submit-btn" onclick="this.innerHTML='Authenticating...';">Sign in as Student</button>
                     
                     <div style="text-align: center; margin-top: 1.5rem; font-size: 0.85rem;">
-                        <span id="signup-prompt">Need an account? <a href="/student_register" id="signup-link" style="color: var(--ms-blue); font-weight: 600;">Sign up as a Student</a></span>
+                        <span id="student-footer">Need an account? <a href="/student/register" id="signup-link" style="color: var(--ms-blue); font-weight: 600;">Sign up as a Student</a></span>
+                        <span id="admin-footer" style="display: none;">Administrator accounts should sign in with your admin credentials.</span>
                     </div>
                 </form>
             </div>
@@ -196,7 +197,8 @@
             document.getElementById('tab-student').classList.toggle('active', role === 'student');
             document.getElementById('tab-admin').classList.toggle('active', role === 'admin');
             
-            // Toggle footer content
+            // Update button label and footer content
+            document.getElementById('submit-btn').textContent = role === 'student' ? 'Sign in as Student' : 'Sign in as Admin';
             document.getElementById('student-footer').style.display = role === 'student' ? 'block' : 'none';
             document.getElementById('admin-footer').style.display = role === 'admin' ? 'block' : 'none';
         }

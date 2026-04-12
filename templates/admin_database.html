@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ScoreHunt | Database Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #181c27;
+            color: #e8edf5;
+            min-height: 100vh;
+        }
+
+        /* ── Top bar ── */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 2rem;
+            background: #1e2235;
+            border-bottom: 1px solid #2d374a;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .topbar-brand { font-size: 1.25rem; font-weight: 800; letter-spacing: -.03em; }
+        .topbar-brand span { color: #6366f1; }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            text-decoration: none;
+            background: #6366f1;
+            color: #fff;
+            padding: .5rem 1.1rem;
+            border-radius: 8px;
+            font-size: .875rem;
+            font-weight: 600;
+            transition: background .2s;
+        }
+        .back-btn:hover { background: #4f46e5; }
+
+        /* ── Page shell ── */
+        .page-shell {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -.04em;
+            margin-bottom: .4rem;
+        }
+        .page-subtitle { color: #94a3b8; margin-bottom: 2rem; }
+
+        /* ── Summary cards ── */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #222840, #2a3050);
+            border: 1px solid #334060;
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            transition: transform .2s, box-shadow .2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,.4); }
+        .stat-label { font-size: .8rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; }
+        .stat-value { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+        .stat-card.blue  .stat-value { color: #60a5fa; }
+        .stat-card.purple .stat-value { color: #a78bfa; }
+        .stat-card.green .stat-value { color: #34d399; }
+        .stat-card.orange .stat-value { color: #fb923c; }
+        .stat-card.red   .stat-value { color: #f87171; }
+        .stat-card.cyan  .stat-value { color: #22d3ee; }
+        .stat-card.yellow .stat-value { color: #fbbf24; }
+        .stat-card.pink  .stat-value { color: #f472b6; }
+        .stat-card.teal  .stat-value { color: #2dd4bf; }
+
+        /* ── Section heading ── */
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 2.5rem 0 1rem;
+        }
+        .section-heading h2 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: .6rem;
+        }
+        .section-heading h2 .icon { font-size: 1.3rem; }
+        .row-count {
+            background: #2d3748;
+            color: #94a3b8;
+            padding: .25rem .7rem;
+            border-radius: 999px;
+            font-size: .8rem;
+            font-weight: 600;
+        }
+
+        /* ── Table ── */
+        .table-wrap {
+            overflow-x: auto;
+            border-radius: 14px;
+            border: 1px solid #2d374a;
+            background: #1c2030;
+            margin-bottom: .5rem;
+        }
+        .db-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .875rem;
+        }
+        .db-table thead th {
+            background: #222840;
+            color: #a8b3cc;
+            font-size: .75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            padding: .9rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #2d374a;
+            white-space: nowrap;
+        }
+        .db-table tbody td {
+            padding: .8rem 1rem;
+            border-bottom: 1px solid #222840;
+            color: #d1d9e6;
+            max-width: 320px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .db-table tbody tr:last-child td { border-bottom: none; }
+        .db-table tbody tr:hover td { background: #222840; }
+
+        /* Special pills for status */
+        .pill {
+            display: inline-block;
+            padding: .2rem .65rem;
+            border-radius: 999px;
+            font-size: .75rem;
+            font-weight: 700;
+        }
+        .pill-green  { background: #064e3b; color: #34d399; }
+        .pill-orange { background: #431407; color: #fb923c; }
+        .pill-red    { background: #450a0a; color: #f87171; }
+        .pill-blue   { background: #1e3a5f; color: #60a5fa; }
+
+        /* empty state */
+        .empty-state {
+            padding: 2.5rem;
+            text-align: center;
+            color: #475569;
+            font-size: .95rem;
+        }
+        .empty-state .icon { font-size: 2.5rem; display: block; margin-bottom: .5rem; }
+
+        /* truncate long hashes/paths */
+        .mono {
+            font-family: 'Courier New', monospace;
+            font-size: .8rem;
+            color: #7c849b;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .page-shell { padding: 1rem; }
+            .topbar { padding: .75rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Bar -->
+    <nav class="topbar">
+        <div class="topbar-brand">Score<span>Hunt</span></div>
+        <a href="/admin" class="back-btn">← Admin Dashboard</a>
+    </nav>
+
+    <div class="page-shell">
+        <h1 class="page-title">📊 Database Viewer</h1>
+        <p class="page-subtitle">Admin-only live view of all core tables — real-time data from <code>proctor.db</code></p>
+
+        <!-- ── Summary Stats Grid ──────────────────────────────────────────── -->
+        <div class="summary-grid">
+            <div class="stat-card purple">
+                <div class="stat-label">Total Admins</div>
+                <div class="stat-value">{{ summary.total_admins }}</div>
+            </div>
+            <div class="stat-card blue">
+                <div class="stat-label">Total Students</div>
+                <div class="stat-value">{{ summary.total_students }}</div>
+            </div>
+            <div class="stat-card cyan">
+                <div class="stat-label">Exams Created</div>
+                <div class="stat-value">{{ summary.total_exams }}</div>
+            </div>
+            <div class="stat-card orange">
+                <div class="stat-label">Active Sessions</div>
+                <div class="stat-value">{{ summary.active_sessions }}</div>
+            </div>
+            <div class="stat-card green">
+                <div class="stat-label">Completed Sessions</div>
+                <div class="stat-value">{{ summary.completed_sessions }}</div>
+            </div>
+            <div class="stat-card yellow">
+                <div class="stat-label">Exam Sessions (Total)</div>
+                <div class="stat-value">{{ summary.total_sessions }}</div>
+            </div>
+            <div class="stat-card pink">
+                <div class="stat-label">Students Not Attended</div>
+                <div class="stat-value">{{ summary.not_attended }}</div>
+            </div>
+            <div class="stat-card red">
+                <div class="stat-label">Cheating Events</div>
+                <div class="stat-value">{{ summary.total_cheating }}</div>
+            </div>
+            <div class="stat-card teal">
+                <div class="stat-label">Total Warnings</div>
+                <div class="stat-value">{{ summary.total_warnings }}</div>
+            </div>
+        </div>
+
+        <!-- ── Students ─────────────────────────────────────────────────────── -->
+        <div class="section-heading">
+            <h2><span class="icon">🎓</span> Students</h2>
+            <span class="row-count">{{ students|length }} row(s)</span>
+        </div>
+        <div class="table-wrap">
+            {% if students %}
+            <table class="db-table">
+                <thead><tr>
+                    <th>ID</th><th>Username</th><th>Email</th><th>Year</th><th>Branch</th><th>Password Hash</th><th>Created At</th>
+                </tr></thead>
+                <tbody>
+                    {% for s in students %}
+                    <tr>
+                        <td>{{ s.id }}</td>
+                        <td><strong>{{ s.name }}</strong></td>
+                        <td>{{ s.email or '—' }}</td>
+                        <td>{{ s.year or '—' }}</td>
+                        <td>{{ s.branch or '—' }}</td>
+                        <td class="mono">{{ (s.password or '')[:40] }}…</td>
+                        <td>{{ s.created_at or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><span class="icon">🚫</span>No students registered yet.</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Admins ────────────────────────────────────────────────────────── -->
+        <div class="section-heading">
+            <h2><span class="icon">🛡️</span> Admins</h2>
+            <span class="row-count">{{ admins|length }} row(s)</span>
+        </div>
+        <div class="table-wrap">
+            {% if admins %}
+            <table class="db-table">
+                <thead><tr>
+                    <th>ID</th><th>Username</th><th>Email</th><th>Password Hash</th><th>Created At</th>
+                </tr></thead>
+                <tbody>
+                    {% for a in admins %}
+                    <tr>
+                        <td>{{ a.id }}</td>
+                        <td><strong>{{ a.admin_name }}</strong></td>
+                        <td>{{ a.email or '—' }}</td>
+                        <td class="mono">{{ (a.password or '')[:40] }}…</td>
+                        <td>{{ a.created_at or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><span class="icon">🚫</span>No admins found.</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Exams ─────────────────────────────────────────────────────────── -->
+        <div class="section-heading">
+            <h2><span class="icon">📝</span> Exams</h2>
+            <span class="row-count">{{ exams|length }} row(s)</span>
+        </div>
+        <div class="table-wrap">
+            {% if exams %}
+            <table class="db-table">
+                <thead><tr>
+                    {% for col in exams[0].keys() %}<th>{{ col }}</th>{% endfor %}
+                </tr></thead>
+                <tbody>
+                    {% for row in exams %}<tr>
+                        {% for col in exams[0].keys() %}<td>{{ row[col] }}</td>{% endfor %}
+                    </tr>{% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><span class="icon">🚫</span>No exams created yet.</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Exam Sessions ──────────────────────────────────────────────────── -->
+        <div class="section-heading">
+            <h2><span class="icon">🖥️</span> Exam Sessions</h2>
+            <span class="row-count">{{ exam_sessions|length }} row(s)</span>
+        </div>
+        <div class="table-wrap">
+            {% if exam_sessions %}
+            <table class="db-table">
+                <thead><tr>
+                    <th>Session ID</th><th>Student ID</th><th>Exam ID</th>
+                    <th>Start Time</th><th>End Time</th>
+                    <th>Status</th><th>Score</th><th>Integrity</th>
+                </tr></thead>
+                <tbody>
+                    {% for s in exam_sessions %}
+                    <tr>
+                        <td class="mono">{{ s.id[:16] }}…</td>
+                        <td>{{ s.student_id or '—' }}</td>
+                        <td>{{ s.exam_id or '—' }}</td>
+                        <td>{{ s.start_time or '—' }}</td>
+                        <td>{{ s.end_time or '—' }}</td>
+                        <td>
+                            {% if s.status == 'ongoing' %}
+                                <span class="pill pill-orange">🔴 Ongoing</span>
+                            {% elif s.status == 'completed' %}
+                                <span class="pill pill-green">✅ Completed</span>
+                            {% elif s.status == 'terminated' %}
+                                <span class="pill pill-red">🚫 Terminated</span>
+                            {% else %}
+                                <span class="pill pill-blue">{{ s.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ s.score }}</td>
+                        <td>{{ s.integrity_score }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><span class="icon">🚫</span>No exam sessions recorded yet.</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Cheating Logs ──────────────────────────────────────────────────── -->
+        <div class="section-heading">
+            <h2><span class="icon">⚠️</span> Cheating Logs</h2>
+            <span class="row-count">{{ cheating_logs|length }} event(s)</span>
+        </div>
+        <div class="table-wrap">
+            {% if cheating_logs %}
+            <table class="db-table">
+                <thead><tr>
+                    <th>ID</th><th>Session ID</th><th>Student ID</th>
+                    <th>Event Type</th><th>Confidence</th><th>Timestamp</th><th>Photo Path</th>
+                </tr></thead>
+                <tbody>
+                    {% for c in cheating_logs %}
+                    <tr>
+                        <td>{{ c.id }}</td>
+                        <td class="mono">{{ (c.session_id or '')[:16] }}…</td>
+                        <td>{{ c.student_id or '—' }}</td>
+                        <td><span class="pill pill-red">{{ c.cheating_type }}</span></td>
+                        <td>{{ c.confidence_score }}</td>
+                        <td>{{ c.timestamp }}</td>
+                        <td class="mono">{{ (c.photo_path or '—')[-40:] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><span class="icon">✅</span>No cheating events recorded — all clear!</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Warnings ───────────────────────────────────────────────────────── -->
+        <div class="section-heading">
+            <h2><span class="icon">🔔</span> Warnings</h2>
+            <span class="row-count">{{ warnings|length }} row(s)</span>
+        </div>
+        <div class="table-wrap">
+            {% if warnings %}
+            <table class="db-table">
+                <thead><tr>
+                    <th>ID</th><th>Session ID</th><th>Student ID</th><th>Warning Message</th><th>Timestamp</th>
+                </tr></thead>
+                <tbody>
+                    {% for w in warnings %}
+                    <tr>
+                        <td>{{ w.id }}</td>
+                        <td class="mono">{{ (w.session_id or '')[:16] }}…</td>
+                        <td>{{ w.student_id or '—' }}</td>
+                        <td>{{ w.warning_message }}</td>
+                        <td>{{ w.timestamp }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><span class="icon">🚫</span>No warnings recorded yet.</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Admin Activity Logs ────────────────────────────────────────────── -->
+        <div class="section-heading">
+            <h2><span class="icon">📋</span> Admin Activity Logs</h2>
+            <span class="row-count">{{ admin_activity_logs|length }} row(s)</span>
+        </div>
+        <div class="table-wrap">
+            {% if admin_activity_logs %}
+            <table class="db-table">
+                <thead><tr>
+                    <th>ID</th><th>Admin ID</th><th>Action</th><th>Description</th><th>Timestamp</th>
+                </tr></thead>
+                <tbody>
+                    {% for log in admin_activity_logs %}
+                    <tr>
+                        <td>{{ log.id }}</td>
+                        <td>{{ log.admin_id or '—' }}</td>
+                        <td><span class="pill pill-blue">{{ log.action }}</span></td>
+                        <td>{{ log.description or '—' }}</td>
+                        <td>{{ log.timestamp }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state"><span class="icon">🚫</span>No admin activity logged yet.</div>
+            {% endif %}
+        </div>
+
+    </div><!-- /page-shell -->
+</body>
+</html>

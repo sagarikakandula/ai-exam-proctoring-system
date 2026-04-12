@@ -37,15 +37,18 @@
         {% endif %}
 
         <form method="POST">
-            <input type="text" name="username" class="ms-input" placeholder="Admin Username" required autofocus>
-            <input type="password" name="password" class="ms-input" placeholder="Admin Password" required>
+            <input type="text" name="username" class="ms-input" placeholder="Admin Name" required autofocus>
+            <input type="email" name="email" class="ms-input" placeholder="Email address" required>
+            <input type="password" name="password" class="ms-input" placeholder="Password" required>
+            <input type="password" name="confirm_password" class="ms-input" placeholder="Confirm Password" required>
+            <input type="password" name="secret_key" class="ms-input" placeholder="Secret Key" required>
             <div style="margin-top: 1.5rem;">
                 <button type="submit" class="ms-btn ms-btn-primary" style="width: 100%;">Create Admin Account</button>
             </div>
         </form>
 
         <div class="footer-links">
-            Already have an account? <a href="/admin/login">Log in here</a>
+            Already have an account? <a href="/admin/login">Sign in here</a>
         </div>
     </div>
 </body>

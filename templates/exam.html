@@ -1217,32 +1217,39 @@ document.addEventListener('contextmenu', e => e.preventDefault());
 let streamInterval = null;
 const streamCanvas = document.createElement('canvas');
 const streamCtx = streamCanvas.getContext('2d');
+let streamUploadInProgress = false;
+const STREAM_WIDTH = 480;
+const STREAM_HEIGHT = 360;
 
 function startStreaming() {
     if (streamInterval) return;
     console.log("[Stream] Starting upload to server...");
-    streamCanvas.width = 640;
-    streamCanvas.height = 480;
+    streamCanvas.width = STREAM_WIDTH;
+    streamCanvas.height = STREAM_HEIGHT;
     
-    streamInterval = setInterval(async () => {
-        if (!mediaStreams.camera) return;
+    streamInterval = setInterval(() => {
+        if (!mediaStreams.camera || streamUploadInProgress) return;
         
         const videoEl = document.getElementById('local-video');
         if (videoEl.videoWidth === 0) return; // Wait until video has loaded
 
-        // Draw video frame to canvas
-        streamCtx.drawImage(videoEl, 0, 0, 640, 480);
+        // Draw video frame to canvas and reduce resolution for faster uploads
+        streamCtx.drawImage(videoEl, 0, 0, STREAM_WIDTH, STREAM_HEIGHT);
         
-        // Convert to blob
+        streamUploadInProgress = true;
         streamCanvas.toBlob(async (blob) => {
-            if (!blob) return;
+            if (!blob) {
+                streamUploadInProgress = false;
+                return;
+            }
             const formData = new FormData();
             formData.append('frame', blob, 'frame.jpg');
             
             try {
                 const resp = await fetch('/api/stream/upload', {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    keepalive: true,
                 });
                 const data = await resp.json();
                 if (data.infractions && data.infractions.length > 0) {
@@ -1250,9 +1257,11 @@ function startStreaming() {
                 }
             } catch (e) {
                 console.error("[Stream] Upload error:", e);
+            } finally {
+                streamUploadInProgress = false;
             }
-        }, 'image/jpeg', 0.6); // Lower quality for speed
-    }, 500); // 2 FPS
+        }, 'image/jpeg', 0.55); // Lower quality for speed
+    }, 400); // ~2.5 FPS
 }
 
 function stopStreaming() {
