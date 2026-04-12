@@ -61,9 +61,28 @@ is_exam_active   = False
 AUTO_STOP_LIMIT  = 25   # auto-stop after this many distinct warnings
 TAB_SWITCH_LIMIT = 3    # terminate after this many tab-switch violations
 
-vision_monitor = VisionMonitor()
-audio_monitor  = None
-os_monitor     = None
+try:
+    vision_monitor = VisionMonitor()
+    print("[App] Vision monitor ready.")
+except Exception as _e:
+    vision_monitor = None
+    print(f"[App] Vision monitor unavailable: {_e}")
+
+try:
+    from modules.audio import AudioMonitor
+    audio_monitor = AudioMonitor()
+    print("[App] Audio monitor ready.")
+except Exception as _e:
+    audio_monitor = None
+    print(f"[App] Audio monitor unavailable: {_e}")
+
+try:
+    from modules.os_monitor import OSMonitor
+    os_monitor = OSMonitor()
+    print("[App] OS monitor ready.")
+except Exception as _e:
+    os_monitor = None
+    print(f"[App] OS monitor unavailable: {_e}")
 
 # LIVE STREAMS: map username -> raw_frame_bytes
 ACTIVE_STREAMS = {}
@@ -532,9 +551,12 @@ def upload_frame():
     
     if frame is not None:
         # Process frame
-        processed, infractions, evidence = vision_monitor.process_frame(frame)
-        for inf in infractions:
-            log_infraction(f"Vision: {inf}", evidence)
+        if vision_monitor:
+            processed, infractions, evidence = vision_monitor.process_frame(frame)
+            for inf in infractions:
+                log_infraction(f"Vision: {inf}", evidence)
+        else:
+            processed, infractions, evidence = frame, [], []
         
         # Store for admin view
         _, buffer = cv2.imencode('.jpg', processed)
