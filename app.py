@@ -1200,5 +1200,6 @@ def face_verify_api():
 
 
 if __name__ == "__main__":
-    print("Starting ScoreHunt AI Proctor Server...")
-    app.run(debug=True, host='0.0.0.0', threaded=True, port=5000, use_reloader=False)
+    port = int(os.environ.get('PORT', 5000))
+    print(f"Starting ScoreHunt AI Proctor Server on port {port}...")
+    app.run(debug=False, host='0.0.0.0', threaded=True, port=port, use_reloader=False)

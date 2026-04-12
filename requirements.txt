@@ -1,7 +1,7 @@
 Flask==3.1.0
 SQLAlchemy==2.0.20
 opencv-python==4.9.0.80
-mediapipe==0.10.11
+# mediapipe==0.10.11  # Commented out for cloud deployment (heavy dependency)
 pyaudio==0.2.14
 pynput==1.7.6
 pygetwindow==0.0.9

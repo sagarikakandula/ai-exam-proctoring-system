@@ -5,9 +5,14 @@ import urllib.request
 import os
 from datetime import datetime
 
-from mediapipe.tasks.python import vision as mp_vision
-from mediapipe.tasks.python.core import base_options as mp_base_options
-from mediapipe import Image as MpImage, ImageFormat as MpImageFormat
+try:
+    from mediapipe.tasks.python import vision as mp_vision
+    from mediapipe.tasks.python.core import base_options as mp_base_options
+    from mediapipe import Image as MpImage, ImageFormat as MpImageFormat
+    MEDIAPIPE_AVAILABLE = True
+except ImportError:
+    MEDIAPIPE_AVAILABLE = False
+    print("[Vision] MediaPipe not available - vision monitoring disabled")
 
 # ── Model paths ──────────────────────────────────────────────────────────────
 _DIR = os.path.dirname(__file__)
@@ -47,6 +52,9 @@ class VisionMonitor:
     MISMATCH_FRAMES = 10   # consecutive mismatch frames required (belt-and-suspenders)
 
     def __init__(self):
+        if not MEDIAPIPE_AVAILABLE:
+            raise ImportError("MediaPipe not available")
+        
         _ensure_model(FACE_MODEL_PATH, FACE_MODEL_URL)
         _ensure_model(OBJ_MODEL_PATH, OBJ_MODEL_URL)
         _ensure_evidence_dir()
