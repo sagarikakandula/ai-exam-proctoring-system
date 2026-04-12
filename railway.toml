@@ -3,7 +3,3 @@ builder = "Nixpacks"
 
 [deploy]
 startCommand = "python app.py"
-
-[build.nixpacks]
-nixPkgs = ["portaudio", "python310", "gcc"]
-aptPkgs = ["python3-dev", "build-essential"]
