@@ -1,8 +1,16 @@
 import time
 import threading
 import statistics
-from pynput import keyboard
-import pygetwindow as gw
+
+try:
+    from pynput import keyboard
+    import pygetwindow as gw
+    OS_MONITOR_AVAILABLE = True
+except Exception as _e:
+    keyboard = None
+    gw = None
+    OS_MONITOR_AVAILABLE = False
+    print(f"[OSMonitor] Optional dependencies unavailable: {_e}")
 
 
 class OSMonitor(threading.Thread):
@@ -26,6 +34,8 @@ class OSMonitor(threading.Thread):
     PASTE_HIT_COUNT     = 3     # ≥ this many of the last 5 flights must exceed threshold
 
     def __init__(self, callback):
+        if not OS_MONITOR_AVAILABLE:
+            raise ImportError("Pynput/pygetwindow unavailable")
         super().__init__()
         self.daemon   = True
         self.callback = callback

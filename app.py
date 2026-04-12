@@ -12,9 +12,36 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import database
 legacy_db = database
 
-from modules.vision import VisionMonitor
-from modules.audio import AudioMonitor
-from modules.os_monitor import OSMonitor
+VisionMonitor = None
+AudioMonitor  = None
+OSMonitor     = None
+vision_monitor = None
+audio_monitor  = None
+os_monitor     = None
+
+try:
+    from modules.vision import VisionMonitor
+    vision_monitor = VisionMonitor()
+    print("[App] Vision monitor ready.")
+except Exception as _e:
+    VisionMonitor = None
+    vision_monitor = None
+    print(f"[App] Vision monitor unavailable: {_e}")
+
+try:
+    from modules.audio import AudioMonitor
+    print("[App] Audio monitor module available.")
+except Exception as _e:
+    AudioMonitor = None
+    print(f"[App] Audio monitor unavailable: {_e}")
+
+try:
+    from modules.os_monitor import OSMonitor
+    print("[App] OS monitor module available.")
+except Exception as _e:
+    OSMonitor = None
+    print(f"[App] OS monitor unavailable: {_e}")
+
 try:
     from modules.face_recog import FaceRecognizer
     face_recognizer = FaceRecognizer()
@@ -732,15 +759,27 @@ def control_exam():
         except Exception as e:
             print(f"[DB] Create exam session error: {e}")
 
-        if audio_monitor is None or not audio_monitor.running:
-            audio_monitor = AudioMonitor(
-                callback=lambda msg: log_infraction(f"Audio: {msg}"))
-            audio_monitor.start()
+        if AudioMonitor is not None and (audio_monitor is None or not audio_monitor.running):
+            try:
+                audio_monitor = AudioMonitor(
+                    callback=lambda msg: log_infraction(f"Audio: {msg}"))
+                audio_monitor.start()
+            except Exception as _e:
+                audio_monitor = None
+                print(f"[App] Audio monitor failed to start: {_e}")
+        elif AudioMonitor is None:
+            print("[App] Audio monitor not available in this environment.")
 
-        if os_monitor is None or not os_monitor.running:
-            os_monitor = OSMonitor(
-                callback=lambda msg: log_infraction(f"OS: {msg}"))
-            os_monitor.start()
+        if OSMonitor is not None and (os_monitor is None or not os_monitor.running):
+            try:
+                os_monitor = OSMonitor(
+                    callback=lambda msg: log_infraction(f"OS: {msg}"))
+                os_monitor.start()
+            except Exception as _e:
+                os_monitor = None
+                print(f"[App] OS monitor failed to start: {_e}")
+        elif OSMonitor is None:
+            print("[App] OS monitor not available in this environment.")
 
         return jsonify({"status": "Started"})
 
