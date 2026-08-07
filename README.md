@@ -226,17 +226,60 @@ http://127.0.0.1:5000
 
 # 📸 Screenshots
 
-> Add screenshots here after uploading them.
+## 🏠 Landing Page
 
-- Landing Page
-- Student Login
-- Face Verification
-- Student Dashboard
-- Live Examination
-- Admin Dashboard
-- Alert Notifications
-- Database Management
+<p align="center">
+<img src="screenshots/landing-page.png" width="900">
+</p>
 
+---
+
+## 🔐 Student Login
+
+<p align="center">
+<img src="screenshots/student-login.png" width="900">
+</p>
+
+---
+
+## 🧑 Face Verification
+
+<p align="center">
+<img src="screenshots/face-verification.png" width="900">
+</p>
+
+
+---
+
+## 📝 Live Examination
+
+<p align="center">
+<img src="screenshots/live-exam.png" width="900">
+</p>
+
+---
+
+## 👨‍💼 Admin Dashboard
+
+<p align="center">
+<img src="screenshots/admin-dashboard.png" width="900">
+</p>
+
+---
+
+## 🚨 Real-Time Alerts
+
+<p align="center">
+<img src="screenshots/alerts.png" width="900">
+</p>
+
+---
+
+## 🗄 Database Management
+
+<p align="center">
+<img src="screenshots/database.png" width="900">
+</p>
 ---
 
 # 🔥 Key Highlights
