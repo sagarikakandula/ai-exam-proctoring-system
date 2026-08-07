@@ -266,22 +266,66 @@ http://127.0.0.1:5000
 - Automatic attendance generation
 
 ---
+---
 
-# 👩‍💻 Author
+# 👥 Team & Research Publication
+
+This project was collaboratively developed as an academic team project and later published as a peer-reviewed research paper. The work combines Artificial Intelligence, Computer Vision, Behavioral Analysis, and Keystroke Dynamics to enhance the integrity of online examinations.
+
+## 👩‍💻 My Contributions
+
+As a member of the development team, I contributed to:
+
+- Backend development using Flask
+- Database design and implementation with SQLAlchemy
+- Student and Admin portal development
+- Integration of AI-based proctoring modules
+- Railway cloud deployment and backend integration
+- System testing, debugging, and deployment
+
+---
+
+## 📄 Research Publication
+
+**Title:**  
+*A novel AI-powered cheating detection system for online examinations using computer vision and keystroke dynamics*
+
+**Journal:**  
+World Journal of Advanced Research and Reviews (WJARR)
+
+**Year:**  
+2026
+
+**DOI:**  
+10.30574/wjarr.2026.30.1.0816
+
+**Authors:**  
+Kavitha Soppari, Sagarika Kandula, Akshaya Chandragiri, Ashwin Goud Pullur
+
+**Publication:**  
+https://wjarr.com/content/novel-ai-powered-cheating-detection-system-online-examinations-using-computer-vision-and
+
+---
+
+## 👨‍👩‍👧‍👦 Project Team
+
+- Kavitha Soppari
+- Sagarika Kandula
+- Akshaya Chandragiri
+- Ashwin Goud Pullur
+
+---
+
+## 📫 Contact
 
 **Sagarika Kandula**
 
-Aspiring Data Scientist | AI & ML Undergraduate
+💼 LinkedIn: https://www.linkedin.com/in/sagarikakandula
 
-- LinkedIn: https://www.linkedin.com/in/sagarikakandula
-- GitHub: https://github.com/sagarikakandula
+💻 GitHub: https://github.com/sagarikakandula
 
----
-
-# 📄 License
-
-This project is developed for educational and research purposes. Feel free to use, modify, and improve it with appropriate attribution.
+📧 Email: sagarikakandula19@gmail.com
 
 ---
 
-⭐ **If you found this project useful, consider giving it a star!**
+⭐ *If you found this project useful, consider giving it a ⭐ on GitHub.*
