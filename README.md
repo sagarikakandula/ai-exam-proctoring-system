@@ -229,7 +229,7 @@ http://127.0.0.1:5000
 ## 🏠 Landing Page
 
 <p align="center">
-<img src="landing-page.png" width="900">
+<img src="landing-page.png.png" width="900">
 </p>
 
 ---
@@ -237,7 +237,7 @@ http://127.0.0.1:5000
 ## 🔐 Student Login
 
 <p align="center">
-<img src="student-login.png" width="900">
+<img src="student-login.png.png" width="900">
 </p>
 
 ---
@@ -245,7 +245,7 @@ http://127.0.0.1:5000
 ## 🧑 Face Verification
 
 <p align="center">
-<img src="face-verification.png" width="900">
+<img src="face-verification.png.png" width="900">
 </p>
 
 
@@ -254,7 +254,7 @@ http://127.0.0.1:5000
 ## 📝 Live Examination
 
 <p align="center">
-<img src="live-exam.png" width="900">
+<img src="live-exam.png.png" width="900">
 </p>
 
 ---
@@ -262,7 +262,7 @@ http://127.0.0.1:5000
 ## 👨‍💼 Admin Dashboard
 
 <p align="center">
-<img src="admin-dashboard.png" width="900">
+<img src="admin-dashboard.png.png" width="900">
 </p>
 
 ---
@@ -270,7 +270,7 @@ http://127.0.0.1:5000
 ## 🚨 Real-Time Alerts
 
 <p align="center">
-<img src="alerts.png" width="900">
+<img src="alerts.png.png" width="900">
 </p>
 
 ---
@@ -278,7 +278,7 @@ http://127.0.0.1:5000
 ## 🗄 Database Management
 
 <p align="center">
-<img src="database.png" width="900">
+<img src="database.png.png" width="900">
 </p>
 ---
 
